@@ -1,6 +1,6 @@
-import { addYears, isAfter, isBefore, parseISO } from 'date-fns'
-import type { UserCase, EligibilityResult, ReliefOption, NextStep, AdditionalFactors } from '../types'
-import { DC_JURISDICTION, DC_OFFENSES, DC_EXCLUDED_OFFENSES } from '../data/jurisdictions/dc'
+import { addYears, isAfter, isBefore } from 'date-fns'
+import type { UserCase, AdditionalFactors, EligibilityResult, ReliefOption, NextStep } from '../types'
+import { DC_OFFENSES } from '../data/jurisdictions/dc'
 
 export class EligibilityEngine {
   
@@ -148,7 +148,7 @@ export class EligibilityEngine {
     return results
   }
   
-  private checkMotionExpungement(userCase: UserCase, additionalFactors: AdditionalFactors): ReliefOption {
+  private checkMotionExpungement(_userCase: UserCase, additionalFactors: AdditionalFactors): ReliefOption {
     const result: ReliefOption = {
       eligible: true, // Always available to claim innocence
       reliefType: 'motion_expungement',
@@ -175,7 +175,7 @@ export class EligibilityEngine {
     return result
   }
   
-  private checkMotionSealing(userCase: UserCase, additionalFactors: AdditionalFactors): ReliefOption {
+  private checkMotionSealing(userCase: UserCase, _additionalFactors: AdditionalFactors): ReliefOption {
     const result: ReliefOption = {
       eligible: false,
       reliefType: 'motion_sealing',
@@ -291,7 +291,7 @@ export class EligibilityEngine {
     }
   }
   
-  private checkTraffickingSurvivorsRelief(userCase: UserCase): ReliefOption {
+  private checkTraffickingSurvivorsRelief(_userCase: UserCase): ReliefOption {
     return {
       eligible: true,
       reliefType: 'trafficking_survivors',
@@ -328,7 +328,8 @@ export class EligibilityEngine {
     const offenseData = this.findOffense(offense)
     if (!offenseData) return false
     
-    return offenseData.excludedFrom.includes(reliefType)
+    // Type-safe check for excluded relief types
+    return offenseData.excludedFrom.some(excluded => excluded === reliefType)
   }
   
   private findOffense(offense: string) {
@@ -398,7 +399,7 @@ export class EligibilityEngine {
     return reasoning
   }
   
-  private generateNextSteps(results: ReliefOption[], userCase: UserCase): NextStep[] {
+  private generateNextSteps(results: ReliefOption[], _userCase: UserCase): NextStep[] {
     const steps: NextStep[] = []
     const eligibleOptions = results.filter(r => r.eligible)
     

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useFormStore } from '../store/formStore'
 import { eligibilityEngine } from '../services/eligibilityEngine'
-import type { EligibilityResult, ReliefOption } from '../types'
+import type { EligibilityResult } from '../types'
 
 const ResultsPage: React.FC = () => {
   const navigate = useNavigate()
