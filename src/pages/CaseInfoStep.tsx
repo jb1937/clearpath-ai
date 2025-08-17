@@ -231,34 +231,6 @@ const CaseInfoStep: React.FC = () => {
             </div>
           </div>
 
-          {/* Common Offenses Helper */}
-          <div className="bg-gray-50 rounded-lg p-4">
-            <h4 className="font-medium text-gray-900 mb-2">Common DC Offenses:</h4>
-            <div className="grid grid-cols-2 gap-2 text-sm">
-              {[
-                'Simple Assault',
-                'Theft Second Degree', 
-                'Disorderly Conduct',
-                'Unlawful Entry',
-                'Possession of Marijuana',
-                'Possession Controlled Substance',
-                'Public Urination',
-                'Metro Fare Evasion'
-              ].map((offense) => (
-                <button
-                  key={offense}
-                  type="button"
-                  className="text-left text-primary-600 hover:text-primary-700 hover:underline"
-                  onClick={() => {
-                    setCurrentCase({ ...currentCase, offense })
-                    setShowSuggestions(false)
-                  }}
-                >
-                  {offense}
-                </button>
-              ))}
-            </div>
-          </div>
 
           <div className="mt-8 flex justify-between">
             <button 
