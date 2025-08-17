@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useFormStore } from '../store/formStore'
 import { eligibilityEngine } from '../services/eligibilityEngine'
+import { dataSecurityService } from '../services/dataSecurity'
+import { config } from '../config/env'
 import type { EligibilityResult } from '../types'
 
 const ResultsPage: React.FC = () => {
@@ -12,36 +14,52 @@ const ResultsPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    let isMounted = true
+    
     const analyzeCase = async () => {
       try {
         if (!cases || cases.length === 0) {
-          setError('No case information found. Please start over.')
-          setLoading(false)
+          if (isMounted) {
+            setError('No case information found. Please start over.')
+            setLoading(false)
+          }
           return
         }
 
         if (!additionalFactors) {
-          setError('Additional factors information missing. Please complete all steps.')
-          setLoading(false)
+          if (isMounted) {
+            setError('Additional factors information missing. Please complete all steps.')
+            setLoading(false)
+          }
           return
         }
 
         // Simulate processing time for better UX
-        await new Promise(resolve => setTimeout(resolve, 1500))
+        await new Promise(resolve => setTimeout(resolve, config.analysisSimulationDelay))
+
+        if (!isMounted) return // Exit if component unmounted during delay
 
         const userCase = cases[0]
         const eligibilityResult = eligibilityEngine.assessEligibility(userCase, additionalFactors)
         
-        setResults(eligibilityResult)
-        setLoading(false)
+        if (isMounted) {
+          setResults(eligibilityResult)
+          setLoading(false)
+        }
       } catch (err) {
         console.error('Error analyzing case:', err)
-        setError('An error occurred while analyzing your case. Please try again.')
-        setLoading(false)
+        if (isMounted) {
+          setError('An error occurred while analyzing your case. Please try again.')
+          setLoading(false)
+        }
       }
     }
 
     analyzeCase()
+    
+    return () => {
+      isMounted = false
+    }
   }, [cases, additionalFactors])
 
   const handleStartOver = () => {
@@ -143,7 +161,7 @@ const ResultsPage: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
           <div>
             <span className="font-medium text-gray-700">Charge:</span>
-            <p className="text-gray-900">{currentCase.offense}</p>
+            <p className="text-gray-900">{dataSecurityService.sanitizeInput(currentCase.offense)}</p>
           </div>
           <div>
             <span className="font-medium text-gray-700">Date:</span>

@@ -1,7 +1,9 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 import { Analytics } from '@vercel/analytics/react'
+import { config } from './config/env'
 import Layout from './components/layout/Layout'
+import ProtectedRoute from './components/common/ProtectedRoute'
 import HomePage from './pages/HomePage'
 import JurisdictionStep from './pages/JurisdictionStep'
 import CaseInfoStep from './pages/CaseInfoStep'
@@ -15,18 +17,42 @@ function App() {
       <div className="min-h-screen bg-gray-50">
         <Layout>
           <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/jurisdiction" element={<JurisdictionStep />} />
-            <Route path="/case-info" element={<CaseInfoStep />} />
-            <Route path="/conviction-details" element={<ConvictionDetailsStep />} />
-            <Route path="/additional-factors" element={<AdditionalFactorsStep />} />
-            <Route path="/results" element={<ResultsPage />} />
+            <Route path="/" element={
+              <ProtectedRoute requiredStep={0}>
+                <HomePage />
+              </ProtectedRoute>
+            } />
+            <Route path="/jurisdiction" element={
+              <ProtectedRoute requiredStep={1}>
+                <JurisdictionStep />
+              </ProtectedRoute>
+            } />
+            <Route path="/case-info" element={
+              <ProtectedRoute requiredStep={2}>
+                <CaseInfoStep />
+              </ProtectedRoute>
+            } />
+            <Route path="/conviction-details" element={
+              <ProtectedRoute requiredStep={3}>
+                <ConvictionDetailsStep />
+              </ProtectedRoute>
+            } />
+            <Route path="/additional-factors" element={
+              <ProtectedRoute requiredStep={4}>
+                <AdditionalFactorsStep />
+              </ProtectedRoute>
+            } />
+            <Route path="/results" element={
+              <ProtectedRoute requiredStep={5}>
+                <ResultsPage />
+              </ProtectedRoute>
+            } />
           </Routes>
         </Layout>
         <Toaster 
           position="top-right"
           toastOptions={{
-            duration: 4000,
+            duration: config.toastDuration,
             style: {
               background: '#363636',
               color: '#fff',

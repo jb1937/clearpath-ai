@@ -5,35 +5,38 @@ import { DC_OFFENSES } from '../data/jurisdictions/dc'
 export class EligibilityEngine {
   
   assessEligibility(userCase: UserCase, additionalFactors: AdditionalFactors): EligibilityResult {
-    const results: ReliefOption[] = []
+    const allResults: ReliefOption[] = []
     
-    // Check automatic expungement
+    // Check automatic expungement - always include result
     const autoExpunge = this.checkAutomaticExpungement(userCase)
-    if (autoExpunge.eligible) results.push(autoExpunge)
+    allResults.push(autoExpunge)
     
-    // Check automatic sealing  
+    // Check automatic sealing - always include result
     const autoSeal = this.checkAutomaticSealing(userCase)
-    if (autoSeal.eligible) results.push(autoSeal)
+    allResults.push(autoSeal)
     
-    // Check motion-based relief
+    // Check motion-based relief - include all results
     const motionRelief = this.checkMotionBasedRelief(userCase, additionalFactors)
-    results.push(...motionRelief.filter(r => r.eligible))
+    allResults.push(...motionRelief)
     
-    // Check special programs
+    // Check special programs - include all results
     const specialPrograms = this.checkSpecialPrograms(userCase, additionalFactors)
-    results.push(...specialPrograms.filter(r => r.eligible))
+    allResults.push(...specialPrograms)
+    
+    // Filter eligible options for best option selection
+    const eligibleResults = allResults.filter(r => r.eligible)
     
     // Generate reasoning and next steps
-    const reasoning = this.generateReasoning(userCase, results)
-    const nextSteps = this.generateNextSteps(results, userCase)
+    const reasoning = this.generateReasoning(userCase, eligibleResults)
+    const nextSteps = this.generateNextSteps(eligibleResults, userCase)
     
     return {
-      bestOption: this.selectBestOption(results),
-      allOptions: results,
+      bestOption: this.selectBestOption(eligibleResults),
+      allOptions: allResults, // Include ALL options, not just eligible ones
       reasoning,
       nextSteps,
-      estimatedTimeline: this.calculateTimeline(results),
-      requiredDocuments: this.getRequiredDocuments(results)
+      estimatedTimeline: this.calculateTimeline(eligibleResults),
+      requiredDocuments: this.getRequiredDocuments(eligibleResults)
     }
   }
   
@@ -61,8 +64,9 @@ export class EligibilityEngine {
       return result
     }
     
-    // Rule 2: Other decriminalized offenses
-    if (this.isDecriminalizedOffense(userCase.offense)) {
+    // Rule 2: Other decriminalized offenses (but NOT marijuana after 2015)
+    if (this.isDecriminalizedOffense(userCase.offense) && 
+        !this.isMarijuanaPossession(userCase.offense)) {
       result.eligible = true
       result.reasons.push('Offense was subsequently decriminalized')
       result.timeline = 'Within 90 days of case termination or by October 2027'
@@ -361,14 +365,14 @@ export class EligibilityEngine {
   private selectBestOption(options: ReliefOption[]): ReliefOption | undefined {
     if (options.length === 0) return undefined
     
-    // Priority order: automatic > motion > special programs
+    // Priority order: automatic > trafficking survivors > motion > other special programs
     const priorities: Record<string, number> = {
       'automatic_expungement': 1,
       'automatic_sealing': 2,
+      'trafficking_survivors': 2.5, // Higher priority than motion-based relief
       'motion_expungement': 3,
       'motion_sealing': 4,
-      'youth_rehabilitation_act': 5,
-      'trafficking_survivors': 3 // High priority for trafficking victims
+      'youth_rehabilitation_act': 5
     }
     
     return options.sort((a, b) => {

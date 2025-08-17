@@ -9,4 +9,27 @@ export default defineConfig({
       '@': '/src',
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          router: ['react-router-dom'],
+          forms: ['react-hook-form', '@hookform/resolvers'],
+          utils: ['date-fns', 'fuse.js'],
+          security: ['crypto-js', 'dompurify'],
+          ui: ['react-hot-toast', 'zustand']
+        }
+      }
+    },
+    // Optimize for production
+    minify: 'terser',
+    sourcemap: false,
+    // Reduce chunk size warnings threshold
+    chunkSizeWarningLimit: 1000
+  },
+  // Performance optimizations
+  optimizeDeps: {
+    include: ['react', 'react-dom', 'react-router-dom', 'zustand']
+  }
 })
