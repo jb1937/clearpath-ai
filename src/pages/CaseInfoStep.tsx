@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useFormStore } from '../store/formStore'
 import { DC_OFFENSES } from '../data/jurisdictions/dc'
+import { dataSecurityService } from '../services/dataSecurity'
+import { config, checkRateLimit } from '../config/env'
 import type { UserCase } from '../types'
 
 const CaseInfoStep: React.FC = () => {
@@ -20,13 +22,26 @@ const CaseInfoStep: React.FC = () => {
   const inputRef = useRef<HTMLInputElement>(null)
 
   const handleOffenseSearch = (value: string) => {
-    setCurrentCase({ ...currentCase, offense: value })
+    // Rate limiting check
+    if (!checkRateLimit('offense-search')) {
+      console.warn('Rate limit exceeded for offense search')
+      return
+    }
     
-    if (value.length > 2) {
+    // Sanitize and validate input
+    const sanitizedValue = dataSecurityService.sanitizeInput(value)
+    if (!dataSecurityService.validateInput(sanitizedValue, config.maxInputLength)) {
+      console.warn('Invalid input detected')
+      return
+    }
+    
+    setCurrentCase({ ...currentCase, offense: sanitizedValue })
+    
+    if (sanitizedValue.length > 2) {
       const filtered = DC_OFFENSES.filter(offense =>
-        offense.name.toLowerCase().includes(value.toLowerCase()) ||
+        offense.name.toLowerCase().includes(sanitizedValue.toLowerCase()) ||
         offense.keywords.some(keyword => 
-          keyword.toLowerCase().includes(value.toLowerCase())
+          keyword.toLowerCase().includes(sanitizedValue.toLowerCase())
         )
       ).slice(0, 8) // Limit to 8 suggestions
       

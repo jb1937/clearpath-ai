@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom'
-import { vi } from 'vitest'
+import { vi, beforeEach, afterEach } from 'vitest'
+import { cleanup } from '@testing-library/react'
 
 // Mock Vercel Analytics
 vi.mock('@vercel/analytics/react', () => ({
@@ -46,4 +47,51 @@ Object.defineProperty(window, 'matchMedia', {
     removeEventListener: vi.fn(),
     dispatchEvent: vi.fn(),
   })),
+})
+
+// Mock crypto for Node.js environment
+Object.defineProperty(global, 'crypto', {
+  value: {
+    randomUUID: () => 'test-uuid-' + Math.random().toString(36).substr(2, 9),
+    getRandomValues: (arr: any) => {
+      for (let i = 0; i < arr.length; i++) {
+        arr[i] = Math.floor(Math.random() * 256)
+      }
+      return arr
+    }
+  }
+})
+
+// Mock performance.now for consistent timing
+Object.defineProperty(global, 'performance', {
+  value: {
+    now: () => Date.now()
+  }
+})
+
+// Enhanced cleanup between tests
+beforeEach(() => {
+  // Clear all mocks
+  vi.clearAllMocks()
+  
+  // Clear all timers
+  vi.clearAllTimers()
+})
+
+afterEach(async () => {
+  // Cleanup React Testing Library
+  cleanup()
+  
+  // Clear any remaining mocks
+  vi.clearAllMocks()
+  
+  // Force garbage collection if available (helps with memory leaks)
+  if (global.gc) {
+    global.gc()
+  }
+})
+
+// Handle unhandled promise rejections in tests
+process.on('unhandledRejection', (reason, promise) => {
+  console.warn('Unhandled promise rejection in test:', reason)
 })

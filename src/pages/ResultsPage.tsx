@@ -4,7 +4,9 @@ import { useFormStore } from '../store/formStore'
 import { eligibilityEngine } from '../services/eligibilityEngine'
 import { dataSecurityService } from '../services/dataSecurity'
 import { config } from '../config/env'
+import { DocumentGenerationPanel } from '../components/documents/DocumentGenerationPanel'
 import type { EligibilityResult } from '../types'
+import type { GeneratedDocument } from '../types/documents'
 
 const ResultsPage: React.FC = () => {
   const navigate = useNavigate()
@@ -383,6 +385,18 @@ const ResultsPage: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* Document Generation Panel */}
+        {eligibleOptions.length > 0 && (
+          <DocumentGenerationPanel
+            userCase={currentCase}
+            additionalFactors={additionalFactors}
+            eligibilityResult={results}
+            onDocumentGenerated={(document: GeneratedDocument) => {
+              console.log('Document generated:', document.title)
+            }}
+          />
+        )}
 
         {/* Legal Disclaimer */}
         <div className="card bg-amber-50 border border-amber-200">

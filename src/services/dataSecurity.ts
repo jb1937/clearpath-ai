@@ -1,17 +1,15 @@
-import CryptoJS from 'crypto-js'
 import DOMPurify from 'dompurify'
-import { config } from '../config/env'
+import { config, checkRateLimit } from '../config/env'
 
 /**
- * Data security service for encrypting sensitive user data
- * and sanitizing user input to prevent XSS attacks
+ * Data security service for sanitizing user input and providing security utilities
+ * NOTE: Client-side encryption removed for security - use server-side encryption instead
  */
 export class DataSecurityService {
   private static instance: DataSecurityService
-  private readonly encryptionKey: string
 
   private constructor() {
-    this.encryptionKey = config.encryptionKey
+    // Initialize security service
   }
 
   static getInstance(): DataSecurityService {
@@ -22,29 +20,27 @@ export class DataSecurityService {
   }
 
   /**
-   * Encrypt sensitive data before storing
+   * DEPRECATED: Client-side encryption removed for security
+   * Use server-side API calls for sensitive data operations
    */
   encryptData(data: any): string {
-    try {
-      const jsonString = JSON.stringify(data)
-      return CryptoJS.AES.encrypt(jsonString, this.encryptionKey).toString()
-    } catch (error) {
-      console.error('Encryption failed:', error)
-      throw new Error('Failed to encrypt data')
-    }
+    console.warn('Client-side encryption is deprecated. Use server-side encryption instead.')
+    // Return base64 encoded data as temporary fallback (NOT SECURE)
+    return btoa(JSON.stringify(data))
   }
 
   /**
-   * Decrypt data when retrieving
+   * DEPRECATED: Client-side decryption removed for security
+   * Use server-side API calls for sensitive data operations
    */
-  decryptData<T>(encryptedData: string): T {
+  decryptData<T>(encodedData: string): T {
+    console.warn('Client-side decryption is deprecated. Use server-side decryption instead.')
+    // Return base64 decoded data as temporary fallback (NOT SECURE)
     try {
-      const bytes = CryptoJS.AES.decrypt(encryptedData, this.encryptionKey)
-      const decryptedString = bytes.toString(CryptoJS.enc.Utf8)
-      return JSON.parse(decryptedString)
+      return JSON.parse(atob(encodedData))
     } catch (error) {
-      console.error('Decryption failed:', error)
-      throw new Error('Failed to decrypt data')
+      console.error('Decoding failed:', error)
+      throw new Error('Failed to decode data')
     }
   }
 
