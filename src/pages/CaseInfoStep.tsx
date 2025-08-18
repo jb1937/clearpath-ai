@@ -159,7 +159,14 @@ const CaseInfoStep: React.FC = () => {
                   <div
                     key={offense.id}
                     className="px-4 py-2 hover:bg-gray-100 cursor-pointer border-b border-gray-100 last:border-b-0"
-                    onClick={() => selectOffense(offense)}
+                    onMouseDown={(e) => {
+                      e.preventDefault() // Prevent input from losing focus
+                      selectOffense(offense)
+                    }}
+                    onClick={(e) => {
+                      e.preventDefault() // Prevent any default behavior
+                      selectOffense(offense)
+                    }}
                   >
                     <div className="font-medium text-gray-900">{offense.name}</div>
                     <div className="text-sm text-gray-600">
