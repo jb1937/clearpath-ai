@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useFormStore } from '../store/formStore'
 import { DC_OFFENSES } from '../data/jurisdictions/dc'
 import { dataSecurityService } from '../services/dataSecurity'
-import { config, checkRateLimit } from '../config/env'
+import { checkRateLimit } from '../config/env'
 import type { UserCase } from '../types'
 
 const CaseInfoStep: React.FC = () => {
@@ -22,22 +22,21 @@ const CaseInfoStep: React.FC = () => {
   const inputRef = useRef<HTMLInputElement>(null)
 
   const handleOffenseSearch = (value: string) => {
-    // Rate limiting check
-    if (!checkRateLimit('offense-search')) {
-      console.warn('Rate limit exceeded for offense search')
-      return
-    }
+    // Always update the input value first for responsive typing
+    setCurrentCase({ ...currentCase, offense: value })
     
-    // Sanitize and validate input
-    const sanitizedValue = dataSecurityService.sanitizeInput(value)
-    if (!dataSecurityService.validateInput(sanitizedValue, config.maxInputLength)) {
-      console.warn('Invalid input detected')
-      return
-    }
-    
-    setCurrentCase({ ...currentCase, offense: sanitizedValue })
-    
-    if (sanitizedValue.length > 2) {
+    // Only apply rate limiting to the search functionality, not input updates
+    if (value.length > 2) {
+      if (!checkRateLimit('offense-search')) {
+        console.warn('Rate limit exceeded for offense search')
+        // Still allow typing, just don't show suggestions
+        setShowSuggestions(false)
+        return
+      }
+      
+      // Sanitize for search but don't block input
+      const sanitizedValue = dataSecurityService.sanitizeInput(value)
+      
       const filtered = DC_OFFENSES.filter(offense =>
         offense.name.toLowerCase().includes(sanitizedValue.toLowerCase()) ||
         offense.keywords.some(keyword => 
