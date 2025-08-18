@@ -153,12 +153,6 @@ export class EligibilityEngine {
   }
   
   private checkMotionExpungement(_userCase: UserCase, additionalFactors: AdditionalFactors): ReliefOption {
-    // Debug logging to see what's being passed
-    console.log('DEBUG - checkMotionExpungement called with:', {
-      seekingActualInnocence: additionalFactors.seekingActualInnocence,
-      additionalFactors
-    })
-    
     const result: ReliefOption = {
       eligible: additionalFactors.seekingActualInnocence === true, // Explicitly check for true
       reliefType: 'motion_expungement',
@@ -184,11 +178,6 @@ export class EligibilityEngine {
       result.reasons.push('Not applicable - you indicated you are not claiming actual innocence')
       result.successLikelihood = 'low'
     }
-    
-    console.log('DEBUG - Motion expungement result:', {
-      eligible: result.eligible,
-      reasons: result.reasons
-    })
     
     return result
   }
