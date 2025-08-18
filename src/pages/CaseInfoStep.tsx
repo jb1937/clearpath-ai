@@ -111,7 +111,13 @@ const CaseInfoStep: React.FC = () => {
   // Close suggestions when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (inputRef.current && !inputRef.current.contains(event.target as Node)) {
+      const target = event.target as Node
+      if (inputRef.current && !inputRef.current.contains(target)) {
+        // Check if the click is on a suggestion item
+        const suggestionDropdown = document.querySelector('.suggestion-dropdown')
+        if (suggestionDropdown && suggestionDropdown.contains(target)) {
+          return // Don't close if clicking on a suggestion
+        }
         setShowSuggestions(false)
       }
     }
@@ -148,7 +154,7 @@ const CaseInfoStep: React.FC = () => {
             
             {/* Autocomplete Suggestions */}
             {showSuggestions && filteredOffenses.length > 0 && (
-              <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
+              <div className="suggestion-dropdown absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
                 {filteredOffenses.map((offense) => (
                   <div
                     key={offense.id}

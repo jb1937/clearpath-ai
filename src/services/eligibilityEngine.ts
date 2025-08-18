@@ -154,11 +154,11 @@ export class EligibilityEngine {
   
   private checkMotionExpungement(_userCase: UserCase, additionalFactors: AdditionalFactors): ReliefOption {
     const result: ReliefOption = {
-      eligible: true, // Always available to claim innocence
+      eligible: additionalFactors.seekingActualInnocence, // Only eligible if claiming innocence
       reliefType: 'motion_expungement',
       name: 'Motion for Expungement (Actual Innocence)',
       description: 'Court-ordered expungement based on actual innocence',
-      reasons: ['Available if you can prove actual innocence'],
+      reasons: [],
       requirements: [
         'Prove by preponderance of evidence that offense did not occur OR was committed by someone else',
         'File motion with DC Superior Court',
@@ -166,14 +166,17 @@ export class EligibilityEngine {
       ],
       timeline: 'Court must decide within 180 days',
       difficulty: 'high',
-      successLikelihood: additionalFactors.seekingActualInnocence ? 'medium' : 'low_without_new_evidence',
+      successLikelihood: 'medium',
       filingFee: 50,
       attorneyRecommended: true
     }
     
     if (additionalFactors.seekingActualInnocence) {
       result.reasons.push('You indicated belief in actual innocence - this may be a viable option')
-      result.successLikelihood = 'medium'
+      result.reasons.push('Available if you can prove actual innocence')
+    } else {
+      result.reasons.push('Not applicable - you indicated you are not claiming actual innocence')
+      result.successLikelihood = 'low'
     }
     
     return result
