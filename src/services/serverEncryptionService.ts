@@ -78,7 +78,7 @@ export class ServerEncryptionService {
   /**
    * Decrypt data from the server
    */
-  async decryptData<T>(encryptedData: string, dataType: 'case' | 'personal' | 'document' = 'case'): Promise<DecryptionResponse> {
+  async decryptData(encryptedData: string, dataType: 'case' | 'personal' | 'document' = 'case'): Promise<DecryptionResponse> {
     const requestId = this.generateRequestId()
     
     try {

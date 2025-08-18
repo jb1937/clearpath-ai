@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { BrowserRouter, MemoryRouter } from 'react-router-dom'
+import { MemoryRouter } from 'react-router-dom'
 import AppWithoutRouter from '../../test-utils/AppWithoutRouter'
 
 // Mock Vercel Analytics
@@ -24,7 +24,7 @@ describe('User Flow Integration Tests', () => {
 
   describe('Complete Eligibility Assessment Flow', () => {
     it('should allow user to complete full assessment for marijuana case', async () => {
-      const user = userEvent.setup()
+      userEvent.setup()
       renderApp()
 
       // Step 1: Home Page
@@ -33,6 +33,7 @@ describe('User Flow Integration Tests', () => {
 
       // Navigate to jurisdiction step
       const startButton = screen.getByText('Check My Eligibility')
+      const user = userEvent.setup()
       await user.click(startButton)
 
       // Should navigate to jurisdiction step - check for jurisdiction page content
@@ -42,7 +43,7 @@ describe('User Flow Integration Tests', () => {
     })
 
     it('should handle navigation between steps correctly', async () => {
-      const user = userEvent.setup()
+      userEvent.setup()
       renderApp(['/jurisdiction']) // Start at jurisdiction page
 
       // Should be on jurisdiction page
@@ -55,7 +56,6 @@ describe('User Flow Integration Tests', () => {
 
   describe('Form Validation Flow', () => {
     it('should prevent progression without required data', async () => {
-      const user = userEvent.setup()
       renderApp(['/jurisdiction']) // Start at jurisdiction page
 
       // Should be on jurisdiction page

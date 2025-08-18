@@ -20,7 +20,6 @@ export const DocumentManagementDashboard: React.FC<DocumentManagementDashboardPr
   const [storageStats, setStorageStats] = useState<any>(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [totalCount, setTotalCount] = useState(0)
-  const [hasMore, setHasMore] = useState(false)
 
   const documentsPerPage = 10
 
@@ -55,7 +54,6 @@ export const DocumentManagementDashboard: React.FC<DocumentManagementDashboardPr
       
       setDocuments(result.documents)
       setTotalCount(result.totalCount)
-      setHasMore(result.hasMore)
 
     } catch (err) {
       console.error('Failed to load documents:', err)

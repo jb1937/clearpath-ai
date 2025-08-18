@@ -1,5 +1,4 @@
 import { dataSecurityService } from './dataSecurity'
-import { securityConfig } from '../config/security'
 import { SecureError, SecureErrorFactory } from '../utils/secureError'
 import type { GeneratedDocument, DocumentMetadata, DocumentAuditLog } from '../types/documents'
 

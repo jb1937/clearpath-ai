@@ -1,12 +1,9 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { legalDataValidator, LegalDataValidator } from '../../services/legalDataValidator'
+import { describe, it, expect, beforeEach } from 'vitest'
+import { LegalDataValidator } from '../../services/legalDataValidator'
 import { 
   createMockUserCase, 
   createMockAdditionalFactors, 
-  createMockPersonalInfo,
-  createValidConcurrentTestCase,
-  testCases,
-  additionalFactorsVariations
+  createValidConcurrentTestCase
 } from '../../test-utils/mockData'
 import type { UserCase, AdditionalFactors } from '../../types'
 
@@ -360,12 +357,6 @@ describe('LegalDataValidator', () => {
     })
 
     it('should reject invalid SSN patterns', () => {
-      const invalidSSNs = [
-        '000-00-0000',
-        '123-45-6789', // This should actually be valid, let me fix
-        '999-99-9999'
-      ]
-      
       // Test with obviously invalid SSN
       const personalInfo = {
         firstName: 'John',

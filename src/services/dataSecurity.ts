@@ -1,5 +1,5 @@
 import DOMPurify from 'dompurify'
-import { config, checkRateLimit } from '../config/env'
+import { config } from '../config/env'
 
 /**
  * Data security service for sanitizing user input and providing security utilities

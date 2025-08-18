@@ -114,7 +114,7 @@ describe('SecurityTestingService', () => {
       mockQuerySelector.mockReturnValue(null)
       mockQuerySelectorAll.mockReturnValue([])
 
-      mockDataSecurityService.sanitizeInput.mockImplementation((input: string) => '')
+      mockDataSecurityService.sanitizeInput.mockImplementation((_input: string) => '')
       mockDataSecurityService.validateInput.mockReturnValue(false)
 
       const report = await securityTestingService.runSecurityScan()
@@ -279,7 +279,7 @@ describe('SecurityTestingService', () => {
       })
       mockQuerySelectorAll.mockReturnValue([])
 
-      mockDataSecurityService.sanitizeInput.mockImplementation((input: string) => '')
+      mockDataSecurityService.sanitizeInput.mockImplementation((_input: string) => '')
       mockDataSecurityService.validateInput.mockImplementation(() => false)
 
       const report = await securityTestingService.runSecurityScan()

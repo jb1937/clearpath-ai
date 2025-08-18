@@ -1,7 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { dcDocumentGenerator, DCDocumentGenerator } from '../../services/dcDocumentGenerator'
-import { legalDataValidator } from '../../services/legalDataValidator'
-import { dataSecurityService } from '../../services/dataSecurity'
+import { DCDocumentGenerator } from '../../services/dcDocumentGenerator'
 import type { UserCase, AdditionalFactors } from '../../types'
 import type { DocumentType } from '../../types/documents'
 
@@ -20,10 +18,12 @@ import type { DocumentType } from '../../types/documents'
  */
 
 // Mock dependencies
+const mockLegalDataValidator = {
+  validateComplete: vi.fn()
+}
+
 vi.mock('../../services/legalDataValidator', () => ({
-  legalDataValidator: {
-    validateComplete: vi.fn()
-  }
+  legalDataValidator: mockLegalDataValidator
 }))
 
 vi.mock('../../services/dataSecurity', () => ({
@@ -89,7 +89,7 @@ describe('DCDocumentGenerator', () => {
     }
 
     // Setup default mock responses
-    vi.mocked(legalDataValidator.validateComplete).mockReturnValue({
+    mockLegalDataValidator.validateComplete.mockReturnValue({
       isValid: true,
       errors: [],
       warnings: [],
@@ -182,7 +182,7 @@ describe('DCDocumentGenerator', () => {
     })
 
     it('should handle validation failures', async () => {
-      vi.mocked(legalDataValidator.validateComplete).mockReturnValue({
+      mockLegalDataValidator.validateComplete.mockReturnValue({
         isValid: false,
         errors: [{
           field: 'offense',
@@ -383,8 +383,8 @@ describe('DCDocumentGenerator', () => {
 
       const instructions = (generator as any).generateFilingInstructions(mockUserCase, mockDocuments)
 
-      expect(instructions.some(i => i.includes('U.S. Attorney\'s Office'))).toBe(true)
-      expect(instructions.some(i => i.includes('Metropolitan Police Department'))).toBe(true)
+      expect(instructions.some((i: string) => i.includes('U.S. Attorney\'s Office'))).toBe(true)
+      expect(instructions.some((i: string) => i.includes('Metropolitan Police Department'))).toBe(true)
     })
 
     it('should include trafficking-specific instructions', async () => {
@@ -395,7 +395,7 @@ describe('DCDocumentGenerator', () => {
 
       const instructions = (generator as any).generateFilingInstructions(traffickingCase, [])
 
-      expect(instructions.some(i => i.includes('expedited processing'))).toBe(true)
+      expect(instructions.some((i: string) => i.includes('expedited processing'))).toBe(true)
     })
   })
 

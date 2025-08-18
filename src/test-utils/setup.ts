@@ -92,6 +92,6 @@ afterEach(async () => {
 })
 
 // Handle unhandled promise rejections in tests
-process.on('unhandledRejection', (reason, promise) => {
+process.on('unhandledRejection', (reason, _promise) => {
   console.warn('Unhandled promise rejection in test:', reason)
 })

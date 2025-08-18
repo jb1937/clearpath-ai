@@ -391,7 +391,7 @@ export class LegalDataValidator {
     userCase: UserCase, 
     errors: ValidationError[], 
     warnings: string[], 
-    suggestions: string[]
+    _suggestions: string[]
   ): void {
     // Age consistency check
     const ageAtOffense = this.calculateAge(userCase.offenseDate)

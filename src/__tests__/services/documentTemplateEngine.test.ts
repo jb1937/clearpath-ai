@@ -36,7 +36,9 @@ describe('DocumentTemplateEngine', () => {
     })
 
     // Mock template loading
-    vi.spyOn(documentTemplateEngine, 'loadTemplate').mockResolvedValue(mockTemplate)
+    // Mock the private loadTemplate method
+    const mockLoadTemplate = vi.fn().mockResolvedValue(mockTemplate)
+    ;(documentTemplateEngine as any).loadTemplate = mockLoadTemplate
   })
 
   describe('generateDocument', () => {
@@ -121,9 +123,9 @@ describe('DocumentTemplateEngine', () => {
       }
 
       // Mock template not found
-      vi.spyOn(documentTemplateEngine, 'loadTemplate').mockRejectedValue(
-        new Error('Template not found')
-      )
+      // Mock the private loadTemplate method to reject
+      const mockLoadTemplate = vi.fn().mockRejectedValue(new Error('Template not found'))
+      ;(documentTemplateEngine as any).loadTemplate = mockLoadTemplate
 
       vi.spyOn(documentTemplateEngine, 'generateDocument').mockResolvedValue(
         mockServiceResponses.documentGeneration.failure
@@ -344,7 +346,7 @@ describe('DocumentTemplateEngine', () => {
       expect(result2.success).toBe(true)
 
       // Verify template was loaded only once (cached on second call)
-      expect(documentTemplateEngine.loadTemplate).toHaveBeenCalledTimes(1)
+      expect((documentTemplateEngine as any).loadTemplate).toHaveBeenCalledTimes(1)
     })
   })
 

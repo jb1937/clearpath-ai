@@ -1,10 +1,8 @@
 import { dataSecurityService } from './dataSecurity'
-import { config } from '../config/env'
 import type {
   DocumentTemplate,
   DocumentGenerationRequest,
   DocumentGenerationResult,
-  DocumentGenerationOptions,
   GeneratedDocument,
   DocumentError,
   ValidationResult,
@@ -367,7 +365,7 @@ export class DocumentTemplateEngine implements TemplateEngine {
    */
   private processConditionalSections(template: string, data: any): string {
     // Process {{#if condition}} sections
-    return template.replace(/\{\{#if\s+([^}]+)\}\}([\s\S]*?)\{\{\/if\}\}/g, (match, condition, content) => {
+    return template.replace(/\{\{#if\s+([^}]+)\}\}([\s\S]*?)\{\{\/if\}\}/g, (_match, condition, content) => {
       try {
         const conditionResult = this.evaluateCondition(condition.trim(), data)
         return conditionResult ? content : ''
@@ -508,7 +506,9 @@ export class DocumentTemplateEngine implements TemplateEngine {
     // Limit cache size for memory management
     if (this.generationCache.size >= securityConfig.cache.maxSize) {
       const oldestKey = this.generationCache.keys().next().value
-      this.generationCache.delete(oldestKey)
+      if (oldestKey) {
+        this.generationCache.delete(oldestKey)
+      }
     }
 
     this.generationCache.set(key, document)

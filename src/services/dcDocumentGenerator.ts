@@ -319,7 +319,6 @@ export class DCDocumentGenerator {
    * Calculate filing fees for documents
    */
   private calculateFilingFees(documents: DCGeneratedDocument[]): DCFilingFee[] {
-    const fees: DCFilingFee[] = []
     const feeMap = new Map<DocumentType, DCFilingFee>()
 
     // DC filing fees (as of 2024)
@@ -361,13 +360,13 @@ export class DCDocumentGenerator {
    * Estimate processing time based on case complexity
    */
   private estimateProcessingTime(
-    userCase: UserCase, 
+    _userCase: UserCase, 
     additionalFactors: AdditionalFactors
   ): string {
     let baseTime = 60 // Base 60 days
 
     // Factors that increase processing time
-    if (userCase.outcome === 'convicted') {
+    if (_userCase.outcome === 'convicted') {
       baseTime += 30 // Convicted cases take longer
     }
 
@@ -393,7 +392,7 @@ export class DCDocumentGenerator {
   /**
    * Get appropriate DC court name based on case
    */
-  private getDCCourtName(userCase: UserCase): string {
+  private getDCCourtName(_userCase: UserCase): string {
     // Most criminal cases in DC go through Superior Court
     return 'Superior Court of the District of Columbia'
   }
@@ -467,7 +466,7 @@ export class DCDocumentGenerator {
    */
   private getSpecialInstructions(
     documentType: DocumentType, 
-    userCase: UserCase
+    _userCase: UserCase
   ): string[] {
     const instructions: string[] = []
 

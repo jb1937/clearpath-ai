@@ -1,7 +1,5 @@
 import { dataSecurityService } from './dataSecurity'
-import { securityConfig } from '../config/security'
-import { SecureError, SecureErrorFactory } from '../utils/secureError'
-import type { GeneratedDocument, DocumentMetadata } from '../types/documents'
+import type { GeneratedDocument } from '../types/documents'
 
 /**
  * PDF Generation Service
@@ -463,7 +461,7 @@ export class PDFGenerationService {
    */
   private async generatePDFFromHTML(
     html: string,
-    options: PDFGenerationOptions
+    _options: PDFGenerationOptions
   ): Promise<Buffer> {
     // In a real implementation, this would use Puppeteer or similar
     // For now, we'll simulate PDF generation
@@ -529,7 +527,7 @@ export class PDFGenerationService {
   private async applyPDFSecurity(
     pdfBuffer: Buffer,
     options: PDFGenerationOptions,
-    document: GeneratedDocument
+    _document: GeneratedDocument
   ): Promise<Buffer> {
     // In a real implementation, this would apply actual PDF security
     // For now, we'll simulate security application
@@ -593,7 +591,9 @@ export class PDFGenerationService {
     // Limit cache size
     if (this.generationCache.size >= 50) {
       const oldestKey = this.generationCache.keys().next().value
-      this.generationCache.delete(oldestKey)
+      if (oldestKey) {
+        this.generationCache.delete(oldestKey)
+      }
     }
 
     this.generationCache.set(key, pdfBuffer)

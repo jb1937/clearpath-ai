@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { useFormStore } from '../../store/formStore'
-import { createMockUserCase, createMockAdditionalFactors } from '../../test-utils/test-data'
+import { createMockUserCase } from '../../test-utils/test-data'
 import { renderHook, act } from '@testing-library/react'
 
 describe('FormStore', () => {

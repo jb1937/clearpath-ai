@@ -6,7 +6,6 @@ import { documentStorageService } from '../../services/documentStorageService'
 import { DocumentViewer } from './DocumentViewer'
 import type { UserCase, AdditionalFactors } from '../../types'
 import type { GeneratedDocument, DocumentGenerationResult } from '../../types/documents'
-import type { StoredDocument } from '../../services/documentStorageService'
 
 interface DocumentGenerationPanelProps {
   userCase: UserCase
@@ -176,14 +175,6 @@ export const DocumentGenerationPanel: React.FC<DocumentGenerationPanelProps> = (
     ].includes(documentType)
   }
 
-  const getCourtName = (jurisdiction: string): string => {
-    switch (jurisdiction) {
-      case 'dc':
-        return 'Superior Court of the District of Columbia'
-      default:
-        return 'Superior Court'
-    }
-  }
 
   const getDocumentDisplayName = (documentType: string): string => {
     const names: Record<string, string> = {
